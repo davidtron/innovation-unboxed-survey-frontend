@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {Component, Fragment } from "react";
 import {Link} from "react-router-dom";
 import {Container, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink, Collapse} from "reactstrap";
 import "./App.css";
@@ -10,16 +10,32 @@ class App extends Component {
 
         this.toggle = this.toggle.bind(this);
         this.state = {
-            isOpen: false
+            isOpen: false,
+            isAuthenticated: false
         };
     }
+
     toggle() {
         this.setState({
             isOpen: !this.state.isOpen
         });
     }
 
+    userHasAuthenticated = authenticated => {
+        this.setState({ isAuthenticated: authenticated });
+    };
+
+    handleLogout = event => {
+        this.userHasAuthenticated(false);
+    };
+
+
     render() {
+        const childProps = {
+            isAuthenticated: this.state.isAuthenticated,
+            userHasAuthenticated: this.userHasAuthenticated
+        };
+
         return (
             <Container className="App">
                 <Navbar color="light" light expand="md">
@@ -27,16 +43,21 @@ class App extends Component {
                     <NavbarToggler onClick={this.toggle}/>
                     <Collapse isOpen={this.state.isOpen} navbar>
                         <Nav className="ml-auto" navbar>
-                            <NavItem>
-                                <NavLink tag={Link} to="/signup">Signup</NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink tag={Link} to="/login">Login</NavLink>
-                            </NavItem>
+                            {this.state.isAuthenticated
+                                ? <NavItem onClick={this.handleLogout}>Logout</NavItem>
+                                : <Fragment>
+                                    <NavItem>
+                                        <NavLink tag={Link} to="/signup">Signup</NavLink>
+                                    </NavItem>
+                                    <NavItem>
+                                        <NavLink tag={Link} to="/login">Login</NavLink>
+                                    </NavItem>
+                                </Fragment>
+                            }
                         </Nav>
                     </Collapse>
                 </Navbar>
-                <Routes/>
+                <Routes childProps={childProps} />
             </Container>
         );
     }
