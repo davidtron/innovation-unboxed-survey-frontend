@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import {Form, FormGroup, Label, Input, Button} from "reactstrap";
 import "./Login.css";
 import { Auth } from "aws-amplify";
+import LoaderButton from "../components/LoaderButton";
 
 
 export default class Login extends Component {
@@ -9,6 +10,7 @@ export default class Login extends Component {
         super(props);
 
         this.state = {
+            isLoading: false,
             email: "",
             password: ""
         };
@@ -27,12 +29,15 @@ export default class Login extends Component {
     handleSubmit = async event => {
         event.preventDefault();
 
+        this.setState({ isLoading: true });
+
         try {
             await Auth.signIn(this.state.email, this.state.password);
             this.props.userHasAuthenticated(true);
-
+            this.props.history.push("/");
         } catch (e) {
-            alert(e);
+            console.log(e.message);
+            this.setState({ isLoading: false });
         }
     };
 
@@ -59,7 +64,14 @@ export default class Login extends Component {
                             type="password"
                         />
                     </FormGroup>
-                    <Button block disabled={!this.validateForm()} type="submit">Login</Button>
+                    <LoaderButton
+                        block
+                        disabled={!this.validateForm()}
+                        type="submit"
+                        isLoading={this.state.isLoading}
+                        text="Login"
+                        loadingText="Logging in..."
+                    />
                 </Form>
             </div>
         );

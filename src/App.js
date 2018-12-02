@@ -1,8 +1,10 @@
 import React, {Component, Fragment } from "react";
-import {Link} from "react-router-dom";
+import {Link, withRouter} from "react-router-dom";
 import {Container, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink, Collapse} from "reactstrap";
 import "./App.css";
 import Routes from "./Routes";
+import { Auth } from "aws-amplify";
+
 
 class App extends Component {
     constructor(props) {
@@ -10,14 +12,29 @@ class App extends Component {
 
         this.toggle = this.toggle.bind(this);
         this.state = {
-            isOpen: false,
-            isAuthenticated: false
+            navIsOpen: false,
+            isAuthenticated: false,
+            isAuthenticating: true
         };
+    }
+
+    async componentDidMount() {
+        try {
+            await Auth.currentSession();
+            this.userHasAuthenticated(true);
+        }
+        catch(e) {
+            if (e !== 'No current user') {
+                alert(e);
+            }
+        }
+
+        this.setState({ isAuthenticating: false });
     }
 
     toggle() {
         this.setState({
-            isOpen: !this.state.isOpen
+            navIsOpen: !this.state.navIsOpen
         });
     }
 
@@ -25,8 +42,11 @@ class App extends Component {
         this.setState({ isAuthenticated: authenticated });
     };
 
-    handleLogout = event => {
+    handleLogout = async event => {
+        await Auth.signOut();
+
         this.userHasAuthenticated(false);
+        this.props.history.push("/login");
     };
 
 
@@ -37,11 +57,12 @@ class App extends Component {
         };
 
         return (
+            !this.state.isAuthenticating &&
             <Container className="App">
                 <Navbar color="light" light expand="md">
                     <NavbarBrand tag={Link} to="/">Innovation Unboxed survey</NavbarBrand>
                     <NavbarToggler onClick={this.toggle}/>
-                    <Collapse isOpen={this.state.isOpen} navbar>
+                    <Collapse isOpen={this.state.navIsOpen} navbar>
                         <Nav className="ml-auto" navbar>
                             {this.state.isAuthenticated
                                 ? <NavItem onClick={this.handleLogout}>Logout</NavItem>
@@ -63,4 +84,4 @@ class App extends Component {
     }
 }
 
-export default App;
+export default withRouter(App);
