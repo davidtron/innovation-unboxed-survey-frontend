@@ -23,9 +23,7 @@ class App extends Component {
         return (
             <Container className="App">
                 <Navbar color="light" light expand="md">
-                    <NavbarBrand>
-                        <Link tag={Link} to="/">Innovation Unboxed survey</Link>
-                    </NavbarBrand>
+                    <NavbarBrand tag={Link} to="/">Innovation Unboxed survey</NavbarBrand>
                     <NavbarToggler onClick={this.toggle}/>
                     <Collapse isOpen={this.state.isOpen} navbar>
                         <Nav className="ml-auto" navbar>
