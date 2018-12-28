@@ -50,6 +50,9 @@ export default class Signup extends Component {
                 newUser
             });
         } catch (e) {
+            // TODO - handle invalid username exception (UsernameExistsException)
+            // TODO - handle password length, type violations
+
             alert(e.message);
         }
 
