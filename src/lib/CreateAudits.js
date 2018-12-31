@@ -6,7 +6,7 @@ export const availableAudits = (audits) => {
     // ie if i have no audits i can create all the available audit types.
 
     // When the app starts up we want to load the available audit types, once
-    const getAvailableAuditTypes = hardCoded;
+    //const getAvailableAuditTypes = hardCoded;
 
     return [
         {
@@ -43,8 +43,39 @@ export const auditListDataFor = (usersAudit) => {
     const audit = lookupById(usersAudit.auditId);
 
     // Calc how much theyve done. If page 0, then 0%, if last page then 100%
-    const percentageComplete = (usersAudit.currentPage / audit.pages.length) * 100;
-    console.log("Audit data "+ usersAudit.currentPage + " " + audit.pages.length);
+    let percentageComplete =  (usersAudit.currentPage  / audit.pages.length) * 100;
+    if((usersAudit.currentPage + 1) ===  audit.pages.length) {
+        // last page, check if all the questions are answered
+
+        const answers = JSON.parse(usersAudit.auditAnswers);
+        console.log("Audit data ", answers );
+
+
+        /*
+
+                let pageData = this.state.audit.pages[currentPage];
+        let answers = this.state.auditAnswers[pageData.pageId];
+
+            unansweredQuestions = () => {
+        // if any of the answers is empty then we return true
+        let questionIds = Object.keys(this.state.answers);
+        let unansweredQuestion = false;
+
+        questionIds.forEach(questionId => {
+            if (this.state.answers[questionId] === "") {
+                unansweredQuestion = true;
+            }
+        });
+
+        return unansweredQuestion;
+    };
+
+         */
+
+
+        // TODO: this is a hack :(
+    }
+
 
     return {
         title: audit.title,
@@ -55,7 +86,9 @@ export const auditListDataFor = (usersAudit) => {
 };
 
 
-const lookupById = auditId => {
+
+
+export const lookupById = auditId => {
     // TODO: Find the correct audit data
     // Where is this cached? for now look at the hardcoded
 
@@ -104,7 +137,7 @@ const hardCoded = [
     pages: [
         {
             pageId: "p1",
-            title: "2018",
+            title: "2018 IT audit",
             description: "This is the description",
             questions: [
                 {

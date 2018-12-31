@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import { ListGroup, ListGroupItem } from "reactstrap";
+import React, {Component} from "react";
+import {ListGroup, ListGroupItem} from "reactstrap";
 import "./Home.css";
-import { API } from "aws-amplify";
+import {API} from "aws-amplify";
 import {Link} from "react-router-dom";
 
-import { availableAudits, createAudit, auditListDataFor } from "../lib/CreateAudits";
+import {auditListDataFor, availableAudits, createAudit} from "../lib/CreateAudits";
 
 export default class Home extends Component {
     constructor(props) {
@@ -25,12 +25,12 @@ export default class Home extends Component {
         // Possible optimisation
         try {
             const audits = await this.getUsersAudits();
-            this.setState({ audits: audits });
+            this.setState({audits: audits});
         } catch (e) {
             alert(e);
         }
 
-        this.setState({ isLoading: false });
+        this.setState({isLoading: false});
     }
 
     getUsersAudits() {
@@ -39,22 +39,24 @@ export default class Home extends Component {
 
 
     async createNewAudit(audit) {
-        this.setState({ isLoading: true });
+        this.setState({isLoading: true});
 
         try {
             const newAudit = await createAudit(audit.auditId);
             // Now route to audit
+            this.props.history.push(`/audits/${newAudit.auditAnswersId}`);
 
         } catch (e) {
             alert(e);
         }
 
-        this.setState({ isLoading: false });
+        this.setState({isLoading: false});
     }
 
     renderAvailableAudits(audits) {
         return availableAudits(audits).map(
-            (audit,i) => <ListGroupItem tag="button" action onClick={() => this.createNewAudit(audit)} key={audit.auditId}>
+            (audit, i) => <ListGroupItem tag="button" action onClick={() => this.createNewAudit(audit)}
+                                         key={audit.auditId}>
                 <h4>
                     <b>{"\uFF0B"}</b>Start: {audit.title}
                 </h4>
@@ -65,21 +67,20 @@ export default class Home extends Component {
 
 
     renderUsersAudits(usersAudits) {
-        console.log("------");
         console.log(usersAudits);
 
         return usersAudits.map(
             (audit, i) => {
                 const userAudit = auditListDataFor(audit);
                 return <ListGroupItem tag={Link} to={`/audits/${audit.auditAnswersId}`} header="Foo" key={i}>
-                                <h4>
-                                    {userAudit.title}
-                                </h4>
-                                {userAudit.description}
-                             <p>
-                            {"Updated " + new Date(userAudit.lastEditTime).toLocaleDateString() + " - audit is " + userAudit.percentageComplete +"% complete"}
-                             </p>
-                            </ListGroupItem>
+                            <h4>
+                                {userAudit.title}
+                            </h4>
+                            {userAudit.description}
+                            <p>
+                                {"Updated " + new Date(userAudit.lastEditTime).toLocaleDateString() + " - audit is " + userAudit.percentageComplete + "% complete"}
+                            </p>
+                        </ListGroupItem>
             }
         );
     }
