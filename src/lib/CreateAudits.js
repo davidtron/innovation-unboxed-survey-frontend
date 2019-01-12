@@ -44,39 +44,10 @@ export const auditListDataFor = (usersAudit) => {
 
     // Calc how much theyve done. If page 0, then 0%, if last page then 100%
     let percentageComplete =  (usersAudit.currentPage  / audit.pages.length) * 100;
-    if((usersAudit.currentPage + 1) ===  audit.pages.length) {
-        // last page, check if all the questions are answered
-
-        const answers = JSON.parse(usersAudit.auditAnswers);
-        console.log("Audit data ", answers );
-
-
-        /*
-
-                let pageData = this.state.audit.pages[currentPage];
-        let answers = this.state.auditAnswers[pageData.pageId];
-
-            unansweredQuestions = () => {
-        // if any of the answers is empty then we return true
-        let questionIds = Object.keys(this.state.answers);
-        let unansweredQuestion = false;
-
-        questionIds.forEach(questionId => {
-            if (this.state.answers[questionId] === "") {
-                unansweredQuestion = true;
-            }
-        });
-
-        return unansweredQuestion;
-    };
-
-         */
-
-
-        // TODO: this is a hack :(
+    if(usersAudit.complete) {
+        percentageComplete = 100;
     }
-
-
+    
     return {
         title: audit.title,
         description: audit.description,
