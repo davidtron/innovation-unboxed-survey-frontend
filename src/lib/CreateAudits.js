@@ -75,7 +75,7 @@ export const lookupById = auditId => {
     return matching[0];
 };
 
-// Generate empty ansers for questions on a page
+// Generate empty answers for questions on a page
 const emptyAnswersForPages = pages => {
 
     let emptyAnswersForEachPage = {};
@@ -197,13 +197,19 @@ const hardCoded = [
                     {
                         questionId: "p2q1",
                         type: "radio",
-                        question: "Do you store your users' data securely either on your systems or in the cloud?",
+                        question: "This is question 1 on page 2",
                         answers: ["yes", "partly", "slightly", "no"]
                     },
                     {
                         questionId: "p2q2",
                         type: "textarea",
-                        question: "Notes",
+                        question: "This is question 2 on page 2",
+                    },
+                    {
+                        questionId: "p2q3",
+                        type: "radio",
+                        question: "This is question 3 on page 2",
+                        answers: ["yes", "partly", "slightly", "no"]
                     },
                 ]
             }

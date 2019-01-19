@@ -6,7 +6,10 @@ import TextBoxAnswer from '../components/TextBoxAnswer'
 import {Button, Form, FormGroup, Container, ButtonGroup} from 'reactstrap';
 import update from 'immutability-helper';
 
-
+/**
+ * Render a page of questions.
+ * Ensures that buttons are only enabled if fields have input.
+ */
 export default class Page extends Component {
     constructor(allprops) {
         super(allprops);

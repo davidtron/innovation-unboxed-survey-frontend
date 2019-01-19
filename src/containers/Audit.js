@@ -7,18 +7,12 @@ import update from "immutability-helper/index";
 
 import {lookupById} from "../lib/CreateAudits";
 
-
+/**
+ * Handles loading audit data and displaying either the questions or the advice
+ */
 export default class Audit extends Component {
     constructor(props) {
         super(props);
-
-        /*
-            TODO: If this is a new audit we could pass in data via props,
-            otherwise we could read from aws if its not passed in, inside componentDidMount.
-            otherwise remove the props destructuring
-         */
-
-        //const {audit, currentPage, auditAnswers} = props;
 
         this.state = {
             audit: null,
@@ -26,17 +20,13 @@ export default class Audit extends Component {
             auditAnswers: null,
             complete: false
         };
-
     }
 
     async componentDidMount() {
-        // TODO: Make this load if its not passed through via props?
-        // At the moment it loads first time and we dont pass through props
-
         try {
             const auditData = await this.getAudit();
 
-            console.log("Loaded", auditData);
+            //console.log("Loaded audit data", auditData);
             const {auditAnswers, currentPage, complete} = auditData;
 
             const audit = lookupById(auditData.auditId);
@@ -48,6 +38,7 @@ export default class Audit extends Component {
                 complete: complete,
             });
         } catch (e) {
+            // TODO - handle errors
             alert(e);
         }
     }
@@ -62,7 +53,7 @@ export default class Audit extends Component {
 
         // TODO: display advice or go back to the
         saved.then(() => this.setState({complete: !this.state.complete}))
-            .catch(error => alert(error));
+            .catch(error => alert(error)); // TODO
     };
 
     previousPage = answersSubmitted => {
@@ -73,7 +64,7 @@ export default class Audit extends Component {
         let saved = this.saveSubmittedAnswers(answersSubmitted, pageNumber, this.state.complete);
 
         saved.then(() => this.setState({currentPage: pageNumber}))
-            .catch(error => alert(error));
+            .catch(error => alert(error)); // TODO
     };
 
     nextPage = answersSubmitted => {
@@ -82,7 +73,7 @@ export default class Audit extends Component {
         let pageNumber = this.state.currentPage + 1;
         let saved = this.saveSubmittedAnswers(answersSubmitted, pageNumber, this.state.complete);
         saved.then(() => this.setState({currentPage: pageNumber}))
-            .catch(error => alert(error));
+            .catch(error => alert(error)); // TODO
 
     };
 
@@ -94,7 +85,7 @@ export default class Audit extends Component {
         const updatedAnswers = update(this.state.auditAnswers, {[answersSubmitted.pageId]: {$set: answersSubmitted.answers}});
         this.setState({auditAnswers: updatedAnswers});
 
-        // todo set page here instead?
+        // TODO set page here instead?
 
         let toSave = {
             currentPage: page,
@@ -115,27 +106,19 @@ export default class Audit extends Component {
 
         const totalPages = this.state.audit.pages.length;
         const currentPage = this.state.currentPage;
+        const pageData = this.state.audit.pages[currentPage];
 
         let prevPageFunction = currentPage - 1 >= 0 ? this.previousPage : null;
         let nextPageFunction = currentPage + 1 < totalPages ? this.nextPage : null;
         let viewAdviceFunction = currentPage + 1 >= totalPages ? this.toggleCompletedStateOfAudit : null;
 
-
-        let pageData = this.state.audit.pages[currentPage];
-        let answers = this.state.auditAnswers[pageData.pageId];
-
-        // TODO - this only passes through answers for the current page
-        // We also need to pass through either a callback or the audit id
         if(this.state.complete && viewAdviceFunction) {
-            console.log("Using answers : ", answers);
-
-            // Go to the advice
-
-            // Need to pass through reference to save answers
-            return <Advice key={pageData.pageId} auditAnswers={this.state.auditAnswers} audit={this.state.audit} edit={viewAdviceFunction}></Advice>
+            return <Advice key={pageData.pageId} auditAnswers={this.state.auditAnswers} audit={this.state.audit}
+                           edit={viewAdviceFunction}
+            />
         }
 
-        console.log("rendering page ", currentPage);
+        let answers = this.state.auditAnswers[pageData.pageId];
 
         return (
             <Container>

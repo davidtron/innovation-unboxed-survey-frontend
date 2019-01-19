@@ -6,6 +6,8 @@ import TextBoxAnswer from '../components/TextBoxAnswer'
 import {Button, Form, FormGroup, Container, ButtonGroup} from 'reactstrap';
 import update from 'immutability-helper';
 import {API} from "aws-amplify/lib/index";
+import {generateAdvice, findPageById} from '../../lib/AdviceOnAudits';
+import {Link} from "react-router-dom";
 
 
 export default class Advice extends Component {
@@ -14,43 +16,64 @@ export default class Advice extends Component {
 
         const {audit, auditAnswers, edit, ...props} = allprops;
         this.audit = audit;
+
         this.edit = edit;
 
+        let advice = generateAdvice(audit, auditAnswers);
+
         this.state = {
-            auditAnswers: auditAnswers
+            auditAnswers: auditAnswers,
+            advice: advice,
+            page: 0
         };
     }
 
-    editAnswers = event => {
-      // set current page on the answers to page 0 (but leave complete as true)
-        let toSave = {
-            currentPage: 0,
-            auditAnswers: JSON.stringify(this.state.auditAnswers),
-            complete: true
-        };
+    next = () => {
+        this.setState({page: this.state.page +1});
+    };
 
-
-        console.log("saving");
-        console.log(toSave);
-
-        let result = API.put("audits", `/audits/${this.audit.auditId}`, {
-            body: toSave
-        });
-
-        console.log(result);
-
-
-        // How should we trigger parent refresh?
-
+    previous = () => {
+        this.setState({page: this.state.page - 1});
     };
 
     render() {
-        // Next page through the audit results until final page
-        console.log(this.state.auditAnswers);
+        // Go through each audit page and see if we have an advice for it and render
 
-        return <div>
-            show the advice here
+        const advicePages = Object.keys(this.state.advice);
+
+        // console.log("All advice is ", this.state.advice);
+
+
+        const pageId = advicePages[this.state.page];
+        const advicePageData = this.state.advice[pageId];
+        // console.log("Rendering advice page "+ this.state.page + " which is " + pageId, advicePageData);
+        // console.log("Audit, ",this.audit);
+
+        let auditPage = findPageById(this.audit, pageId);
+
+        if(! auditPage) {
+            // Last page (ie the summary)
+            auditPage = {
+                title: this.audit.title,
+                description: this.audit.description
+            };
+        }
+
+        const nextLink = this.state.page+1 < advicePages.length ? <Button onClick={this.next}>Next</Button>: <Button tag={Link} to={`/`}>Close</Button>;;
+        const prevLink = this.state.page-1 >= 0 ? <Button onClick={this.previous}>Previous</Button> : null;
+
+
+        return <Container>
+
+            <h2>{auditPage.title}</h2>
+            <h3>{auditPage.description}</h3>
+            <p>{advicePageData.score}</p>
+            <p>{advicePageData.result}</p>
+
+            {prevLink}
+            {nextLink}
+
             <Button onClick={this.edit}>Edit my answers</Button>
-        </div>
+        </Container>
     }
 }
