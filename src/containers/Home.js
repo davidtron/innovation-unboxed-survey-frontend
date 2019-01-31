@@ -1,10 +1,9 @@
 import React, {Component} from "react";
 import {ListGroup, ListGroupItem} from "reactstrap";
 import "./Home.css";
-import {API} from "aws-amplify";
 import {Link} from "react-router-dom";
 
-import {auditListDataFor, availableAudits, createAudit} from "../lib/CreateAudits";
+import {createAudit, getUnstartedAudits, getInProgressAudits} from "../lib/AuditData";
 
 export default class Home extends Component {
     constructor(props) {
@@ -12,29 +11,33 @@ export default class Home extends Component {
 
         this.state = {
             isLoading: true,
-            audits: []
+            unstartedAudits: [],
+            inProgressAudits: [],
+            error: null
         };
     }
 
     async componentDidMount() {
+
+        // Disable when working on train
         if (!this.props.isAuthenticated) {
             return;
         }
 
-        // TODO: this loads when we select menu - do we want to do that if we already have state?
-        // Possible optimisation
         try {
-            const audits = await this.getUsersAudits();
-            this.setState({audits: audits});
+            const unstartedAudits = await getUnstartedAudits();
+            const inProgressAudits = await getInProgressAudits();
+
+            this.setState({
+                inProgressAudits: inProgressAudits,
+                unstartedAudits: unstartedAudits
+            });
         } catch (e) {
-            alert(e);
+            this.setState({error: e.message});
+            console.error("Could not mount audit Home",e);
         }
 
         this.setState({isLoading: false});
-    }
-
-    getUsersAudits() {
-        return API.get("audits", "/audits");
     }
 
 
@@ -47,42 +50,64 @@ export default class Home extends Component {
             this.props.history.push(`/audits/${newAudit.auditAnswersId}`);
 
         } catch (e) {
-            alert(e);
+            this.setState({error: e.message});
+            console.error("Could not create new audit",e);
         }
 
         this.setState({isLoading: false});
     }
 
-    renderAvailableAudits(audits) {
-        return availableAudits(audits).map(
-            (audit, i) => <ListGroupItem tag="button" action onClick={() => this.createNewAudit(audit)}
-                                         key={audit.auditId}>
-                <h4>
-                    <b>{"\uFF0B"}</b>Start: {audit.title}
-                </h4>
-                {audit.description}
-            </ListGroupItem>
+    renderUnstartedAudits() {
+
+        const unstartedAudits = this.state.unstartedAudits;
+        // console.log("render unstarted", unstartedAudits);
+
+        if (unstartedAudits.length === 0) {
+            return <div/>;
+        }
+        return (
+            <div>
+                <h2>Start a new audit</h2>
+                <ListGroup>
+                    {unstartedAudits.map(
+                        (audit, i) => <ListGroupItem tag="button" action
+                                                     onClick={() => this.createNewAudit(audit)}
+                                                     key={i}>
+                            <h4>
+                                <b>{"\uFF0B"}</b>Start: {audit.title}
+                            </h4>
+                            {audit.description}
+                        </ListGroupItem>
+                    )}
+                </ListGroup>
+            </div>
         );
     }
 
 
-    renderUsersAudits(usersAudits) {
-        console.log(usersAudits);
+    renderInProgressAudits() {
+        const inProgressAudits = this.state.inProgressAudits;
+        if (inProgressAudits.length === 0) {
+            return <div/>;
+        }
 
-        return usersAudits.map(
-            (audit, i) => {
-                const userAudit = auditListDataFor(audit);
-                return <ListGroupItem tag={Link} to={`/audits/${audit.auditAnswersId}`} header="Foo" key={i}>
-                            <h4>
-                                {userAudit.title}
-                            </h4>
-                            {userAudit.description}
-                            <p>
-                                {"Updated " + new Date(userAudit.lastEditTime).toLocaleDateString() + " - audit is " + userAudit.percentageComplete + "% complete"}
-                            </p>
-                        </ListGroupItem>
-            }
-        );
+        return (
+            <div className="audits">
+                <h2>Your existing audits</h2>
+                <ListGroup>
+                    {inProgressAudits.map(
+                        (audit, i) => <ListGroupItem tag={Link} to={`/audits/${audit.auditAnswersId}`} header="Foo" key={i}>
+                                    <h4>
+                                        {audit.title}
+                                    </h4>
+                                    {audit.description}
+                                    <p>
+                                        {"Updated " + new Date(audit.lastEditTime).toLocaleDateString() + " - audit is " + audit.percentageComplete + "% complete"}
+                                    </p>
+                                </ListGroupItem>
+                    )}
+                </ListGroup>
+            </div>);
     }
 
     /**
@@ -99,22 +124,14 @@ export default class Home extends Component {
     }
 
     renderAudits() {
+        if (this.state.isLoading) {
+            return <div>Loading</div>
+        }
 
         return (
             <div>
-
-                <h3>Start a new audit</h3>
-                <ListGroup>
-                    {!this.state.isLoading && this.renderAvailableAudits(this.state.audits)}
-                </ListGroup>
-
-
-                <div className="audits">
-                    <h2>Your existing audits</h2>
-                    <ListGroup>
-                        {!this.state.isLoading && this.renderUsersAudits(this.state.audits)}
-                    </ListGroup>
-                </div>
+                {this.renderUnstartedAudits()}
+                {this.renderInProgressAudits()}
             </div>
         );
     }
@@ -122,6 +139,7 @@ export default class Home extends Component {
     render() {
         return (
             <div className="Home">
+                <div>{this.state.error}</div>
                 {this.props.isAuthenticated ? this.renderAudits() : this.renderLander()}
             </div>
         );

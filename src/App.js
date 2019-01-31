@@ -6,7 +6,7 @@ import Routes from "./Routes";
 import { Auth } from "aws-amplify";
 
 
-class App extends Component {
+export class App extends Component {
     constructor(props) {
         super(props);
 
@@ -25,7 +25,7 @@ class App extends Component {
         }
         catch(e) {
             if (e !== 'No current user') {
-                alert(e);
+                console.log(e); // TODO
             }
         }
 

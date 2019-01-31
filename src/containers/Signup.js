@@ -53,7 +53,7 @@ export default class Signup extends Component {
             // TODO - handle invalid username exception (UsernameExistsException)
             // TODO - handle password length, type violations
 
-            alert(e.message);
+            console.log(e.message);
         }
 
         this.setState({ isLoading: false });
@@ -71,7 +71,7 @@ export default class Signup extends Component {
             this.props.userHasAuthenticated(true);
             this.props.history.push("/");
         } catch (e) {
-            alert(e.message);
+            console.log(e.message);
             this.setState({ isLoading: false });
         }
     };

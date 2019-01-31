@@ -14,7 +14,7 @@ export default class Page extends Component {
     constructor(allprops) {
         super(allprops);
 
-        const {pageData, answers, previous, next, quit, ...props} = allprops;
+        const {pageData, answers, previous, next, quit} = allprops;
         this.pageData = pageData;
 
         this.previous = previous;

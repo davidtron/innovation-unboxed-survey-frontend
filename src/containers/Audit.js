@@ -1,11 +1,10 @@
 import React, {Component} from "react";
-import {API} from "aws-amplify";
 import Page from "../audit/containers/Page";
 import Advice from "../audit/containers/Advice";
 import {Container, Progress} from 'reactstrap';
 import update from "immutability-helper/index";
 
-import {lookupById} from "../lib/CreateAudits";
+import {lookupById, loadAuditById, saveAudit} from "../lib/AuditData";
 
 /**
  * Handles loading audit data and displaying either the questions or the advice
@@ -24,12 +23,12 @@ export default class Audit extends Component {
 
     async componentDidMount() {
         try {
-            const auditData = await this.getAudit();
+            const auditData = await loadAuditById(this.props.match.params.id);
 
             //console.log("Loaded audit data", auditData);
             const {auditAnswers, currentPage, complete} = auditData;
 
-            const audit = lookupById(auditData.auditId);
+            const audit = await lookupById(auditData.auditId);
 
             this.setState({
                 audit: audit,
@@ -39,12 +38,8 @@ export default class Audit extends Component {
             });
         } catch (e) {
             // TODO - handle errors
-            alert(e);
+            console.log(e);
         }
-    }
-
-    getAudit() {
-        return API.get("audits", `/audits/${this.props.match.params.id}`);
     }
 
     toggleCompletedStateOfAudit = answersSubmitted => {
@@ -53,7 +48,7 @@ export default class Audit extends Component {
 
         // TODO: display advice or go back to the
         saved.then(() => this.setState({complete: !this.state.complete}))
-            .catch(error => alert(error)); // TODO
+            .catch(error => console.log(error)); // TODO
     };
 
     previousPage = answersSubmitted => {
@@ -64,7 +59,7 @@ export default class Audit extends Component {
         let saved = this.saveSubmittedAnswers(answersSubmitted, pageNumber, this.state.complete);
 
         saved.then(() => this.setState({currentPage: pageNumber}))
-            .catch(error => alert(error)); // TODO
+            .catch(error => console.log(error)); // TODO
     };
 
     nextPage = answersSubmitted => {
@@ -73,7 +68,7 @@ export default class Audit extends Component {
         let pageNumber = this.state.currentPage + 1;
         let saved = this.saveSubmittedAnswers(answersSubmitted, pageNumber, this.state.complete);
         saved.then(() => this.setState({currentPage: pageNumber}))
-            .catch(error => alert(error)); // TODO
+            .catch(error => console.log(error)); // TODO
 
     };
 
@@ -93,11 +88,7 @@ export default class Audit extends Component {
             complete: complete
         };
 
-        console.log("saving ", toSave);
-
-        return await API.put("audits", `/audits/${this.props.match.params.id}`, {
-            body: toSave
-        });
+        return await saveAudit(this.props.match.params.id, toSave);
     };
 
 

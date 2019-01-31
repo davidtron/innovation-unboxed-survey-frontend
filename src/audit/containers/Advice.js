@@ -59,7 +59,7 @@ export default class Advice extends Component {
             };
         }
 
-        const nextLink = this.state.page+1 < advicePages.length ? <Button onClick={this.next}>Next</Button>: <Button tag={Link} to={`/`}>Close</Button>;;
+        const nextLink = this.state.page+1 < advicePages.length ? <Button onClick={this.next}>Next</Button>: <Button tag={Link} to={`/`}>Close Advice</Button>;;
         const prevLink = this.state.page-1 >= 0 ? <Button onClick={this.previous}>Previous</Button> : null;
 
 

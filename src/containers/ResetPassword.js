@@ -50,7 +50,7 @@ export default class ResetPassword extends Component {
             await Auth.forgotPassword(this.state.email);
             this.setState({codeSent: true});
         } catch (e) {
-            alert(e.message);
+            console.log(e.message);
             this.setState({isSendingCode: false});
         }
     };
@@ -68,7 +68,7 @@ export default class ResetPassword extends Component {
             );
             this.setState({confirmed: true});
         } catch (e) {
-            alert(e.message);
+            console.log(e.message);
             this.setState({isConfirming: false});
         }
     };

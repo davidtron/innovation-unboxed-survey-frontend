@@ -1,102 +1,25 @@
-import { API } from "aws-amplify";
+import API from "aws-amplify";
+import { Storage } from "aws-amplify";
+jest.mock('aws-amplify')
+
+import { loadAuditData } from './AuditData';
+
+// TODO - use the mock or just prime here?
 
 
-export const availableAudits = (audits) => {
-    // Determine from the passed in data what other audits could be created.
-    // ie if i have no audits i can create all the available audit types.
+test('it retrieves data from s3 bucket', () => {
+    expect.assertions(1);
+    loadAuditData();
+    expect(Storage.list).toHaveBeenCalled();
 
-    // When the app starts up we want to load the available audit types, once
-    //const getAvailableAuditTypes = hardCoded;
+});
 
-    return [
-        {
-            auditId: "auditNumber1",
-            title: "Organisation IT health",
-            description: "Assess the your organisations IT awareness and give recommendations for digital"
-        },
-        {
-            auditId: "auditNumber2",
-            title: "Do I need a programmer?",
-            description: "Do you need a programmer or can you buy off the shelf?"
-        }
-    ];
-};
+test('it blows up when data is when s3 is not available', () => {
+    expect.assertions(1);
+    loadAuditData();
+    expect(Storage.list).toHaveBeenCalled();
 
-export const createAudit = async (auditId) => {
-    let audit = lookupById(auditId);
-
-    // Create empty answers
-    let emptyAnswers = emptyAnswersForPages(audit.pages);
-
-    let params = {
-        auditId: auditId,
-        auditAnswers: JSON.stringify(emptyAnswers)
-    };
-
-    return API.post("audits", "/audits", {
-        body: params
-    });
-};
-
-export const auditListDataFor = (usersAudit) => {
-    // TODO: Lookup the audit data from cache, use hardcoded for now
-    const audit = lookupById(usersAudit.auditId);
-
-    // Calc how much theyve done. If page 0, then 0%, if last page then 100%
-    let percentageComplete =  (usersAudit.currentPage  / audit.pages.length) * 100;
-    if(usersAudit.complete) {
-        percentageComplete = 100;
-    }
-    
-    return {
-        title: audit.title,
-        description: audit.description,
-        percentageComplete: percentageComplete,
-        lastEditTime: usersAudit.lastEditTime
-    }
-};
-
-
-
-
-export const lookupById = auditId => {
-    // TODO: Find the correct audit data
-    // Where is this cached? for now look at the hardcoded
-
-    const matching = hardCoded.filter(eachAudit => eachAudit.auditId === auditId);
-    if (matching.length !== 1) {
-
-        // TODO boom - how to handle errors?
-        // Think this whole method should be async and return an error for front end to handle (same as if aws connectivity down)
-        throw new Error("Could not find " +auditId);
-    }
-
-    // Found the audit data
-    return matching[0];
-};
-
-// Generate empty answers for questions on a page
-const emptyAnswersForPages = pages => {
-
-    let emptyAnswersForEachPage = {};
-    pages.forEach((page) => {
-        const answers = emptyStateValuesForAnswers(page.questions);
-        emptyAnswersForEachPage[page.pageId] = answers;
-    });
-    return emptyAnswersForEachPage;
-};
-
-
-// Generate empty answers for current question
-const emptyStateValuesForAnswers = questions => {
-    let answers = {};
-    questions.forEach((question) => {
-        answers[question.questionId] = "";
-    });
-
-    return answers;
-};
-
+});
 
 
 // TODO - replace with a startup request in App.js to retrieve data from s3 and cache
