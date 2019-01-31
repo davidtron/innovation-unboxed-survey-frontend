@@ -30,7 +30,8 @@ export default class Home extends Component {
 
             this.setState({
                 inProgressAudits: inProgressAudits,
-                unstartedAudits: unstartedAudits
+                unstartedAudits: unstartedAudits,
+                error: null
             });
         } catch (e) {
             this.setState({error: e.message});
@@ -58,13 +59,11 @@ export default class Home extends Component {
     }
 
     renderUnstartedAudits() {
-
         const unstartedAudits = this.state.unstartedAudits;
-        // console.log("render unstarted", unstartedAudits);
-
         if (unstartedAudits.length === 0) {
             return <div/>;
         }
+
         return (
             <div>
                 <h2>Start a new audit</h2>

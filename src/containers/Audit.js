@@ -17,7 +17,8 @@ export default class Audit extends Component {
             audit: null,
             currentPage: null,
             auditAnswers: null,
-            complete: false
+            complete: false,
+            error: null
         };
     }
 
@@ -35,52 +36,53 @@ export default class Audit extends Component {
                 currentPage: currentPage,
                 auditAnswers: JSON.parse(auditAnswers),
                 complete: complete,
+                error: null
             });
         } catch (e) {
-            // TODO - handle errors
-            console.log(e);
+            this.handleError(e);
         }
+    }
+
+    handleError(e) {
+        this.setState({error: e.message});
+        console.error("Could not render Audit", e);
     }
 
     toggleCompletedStateOfAudit = answersSubmitted => {
         console.log("Setting completed state to " + !this.state.complete);
         let saved = this.saveSubmittedAnswers(answersSubmitted, this.state.currentPage, !this.state.complete);
 
-        // TODO: display advice or go back to the
         saved.then(() => this.setState({complete: !this.state.complete}))
             .catch(error => console.log(error)); // TODO
     };
 
     previousPage = answersSubmitted => {
-        console.log("Prev page pressed");
         let pageNumber = this.state.currentPage - 1;
-        console.log("Prev page pressed, new pagenumber is ", pageNumber);
+        // console.log("Prev page pressed, new pagenumber is ", pageNumber);
 
         let saved = this.saveSubmittedAnswers(answersSubmitted, pageNumber, this.state.complete);
 
         saved.then(() => this.setState({currentPage: pageNumber}))
-            .catch(error => console.log(error)); // TODO
+            .catch(error => this.handleError(error));
     };
 
     nextPage = answersSubmitted => {
-        console.log("Next page pressed");
-
         let pageNumber = this.state.currentPage + 1;
+        // console.log("Next page pressed, new pagenumber is ", pageNumber);
+
         let saved = this.saveSubmittedAnswers(answersSubmitted, pageNumber, this.state.complete);
         saved.then(() => this.setState({currentPage: pageNumber}))
-            .catch(error => console.log(error)); // TODO
+            .catch(error => this.handleError(error));
 
     };
 
 
     saveSubmittedAnswers = async (answersSubmitted, page, complete) => {
-        console.log("Answer submitted ", answersSubmitted);
-        console.log("current page is ", page);
+        // console.log("Answer submitted ", answersSubmitted);
+        // console.log("current page is ", page);
 
         const updatedAnswers = update(this.state.auditAnswers, {[answersSubmitted.pageId]: {$set: answersSubmitted.answers}});
         this.setState({auditAnswers: updatedAnswers});
-
-        // TODO set page here instead?
 
         let toSave = {
             currentPage: page,
@@ -113,6 +115,7 @@ export default class Audit extends Component {
 
         return (
             <Container>
+                <div>{this.state.error}</div>
                 <Page key={pageData.pageId} answers={answers} pageData={pageData}
                       previous={prevPageFunction}
                       next={nextPageFunction}
