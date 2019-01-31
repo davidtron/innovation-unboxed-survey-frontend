@@ -53,7 +53,7 @@ export default class Audit extends Component {
         let saved = this.saveSubmittedAnswers(answersSubmitted, this.state.currentPage, !this.state.complete);
 
         saved.then(() => this.setState({complete: !this.state.complete}))
-            .catch(error => console.log(error)); // TODO
+            .catch(error => this.handleError(error));
     };
 
     previousPage = answersSubmitted => {
