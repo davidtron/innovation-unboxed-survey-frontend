@@ -14,7 +14,8 @@ export class App extends Component {
         this.state = {
             navIsOpen: false,
             isAuthenticated: false,
-            isAuthenticating: true
+            isAuthenticating: true,
+            error: null
         };
     }
 
@@ -25,11 +26,12 @@ export class App extends Component {
         }
         catch(e) {
             if (e !== 'No current user') {
-                console.log(e); // TODO
+                console.error(e);
+                this.setState({ error: e.message });
             }
         }
 
-        this.setState({ isAuthenticating: false });
+        this.setState({ isAuthenticating: false, error: null});
     }
 
     toggle() {
@@ -78,6 +80,7 @@ export class App extends Component {
                         </Nav>
                     </Collapse>
                 </Navbar>
+                <div>{this.state.error}</div>
                 <Routes childProps={childProps} />
             </Container>
         );
