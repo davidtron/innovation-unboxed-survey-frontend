@@ -1,20 +1,11 @@
-import {API, Storage, Cache} from "aws-amplify";
-import {utf8ArrayToStr} from "./JsonHelper";
-
-const useStub = false;
+import { Cache } from "aws-amplify";
+import {getUsersAudits, saveNewAudit, retrieveDataFile} from "./StubDataLoader"
 
 export const loadAuditData = async () => {
-    if(useStub) {
-        const stubbedAuditData = await fakeLoadAuditData();
-        Cache.setItem("auditData", stubbedAuditData, {expires: 3600000});
-        return stubbedAuditData;
-    }
-
     Cache.setItem("auditData", []);
-    const result = await Storage.get("audit.json", {download: true, expires: 3600000});
-    let cachedAuditData = JSON.parse(utf8ArrayToStr(result.Body));
-    Cache.setItem("auditData", cachedAuditData, {expires: 3600000});
-    return cachedAuditData;
+    const auditData = await retrieveDataFile("audit.json");
+    Cache.setItem("auditData", auditData, {expires: 3600000});
+    return auditData;
 };
 
 export const lookupById = async (auditId) => {
@@ -29,26 +20,14 @@ export const getUnstartedAudits = async () => {
 
 export const getInProgressAudits = async () => {
     const inProgressAudits = await getUsersAudits();
-
     const cachedAuditData = await getCachedAuditData();
-
-    console.log('cached audit data ', cachedAuditData);
-    console.log('in progress audits are ', inProgressAudits);
 
     return inProgressAudits.map(audit =>  {
         return auditListDataFor(cachedAuditData, audit);
     });
 };
 
-export const loadAuditById = async (auditId) => {
-    return API.get("audits", `/audits/${auditId}`);
-};
 
-export const saveAudit = async (auditId, auditDataToSave) => {
-    return API.put("audits", `/audits/${auditId}`, {
-        body: auditDataToSave
-    });
-};
 
 export const createAudit = async (auditId) => {
     const audit = await lookupById(auditId);
@@ -61,9 +40,7 @@ export const createAudit = async (auditId) => {
         auditAnswers: JSON.stringify(emptyAnswers)
     };
 
-    return API.post("audits", "/audits", {
-        body: params
-    });
+    return saveNewAudit(params);
 };
 
 const getCachedAuditData = async () => {
@@ -78,7 +55,7 @@ const availableAudits = async (inProgressAudits) => {
 
     const auditsNotStarted = cachedAuditData.filter(availableAudit => !(inProgressAuditIds.includes(availableAudit.auditId)));
 
-    console.log("Audits not started", auditsNotStarted);
+    // console.log("Audits not started", auditsNotStarted);
     return auditsNotStarted;
 };
 
@@ -100,30 +77,6 @@ const auditListDataFor =  (cachedAuditData, usersAudit) => {
     }
 };
 
-
-
-const getUsersAudits = async () =>  {
-    if(useStub) {
-        return new Promise(function(resolve, reject) {
-            setTimeout(() => resolve([
-                {
-                    auditId: "auditNumber1",
-                    auditAnswersId: "sfaas-errwe-ewrqrqw-qwrqqwr",
-                    complete : false,
-                    currentPage : 1,
-                    description : "Mock description",
-                    lastEditTime : 1548715252279,
-                    title : "Mock title"
-                }
-            ]), 1400);
-        });
-    }
-
-    return API.get("audits", "/audits");
-};
-
-
-// ---- sync calls
 
 const lookupFromDataById = (auditData, auditId) => {
     const matching = auditData.filter(eachAudit => eachAudit.auditId === auditId);
@@ -153,131 +106,3 @@ const emptyStateValuesForAnswers = questions => {
 
     return answers;
 };
-
-
-//---
-
-const fakeLoadAuditData = async () => {
-    return new Promise(function(resolve, reject) {
-        setTimeout(() => resolve(hardCoded), 400);
-    });
-};
-
-
-// TODO - replace with a startup request in App.js to retrieve data from s3 and cache
-const hardCoded = [
-    {
-        auditId: "auditNumber1",
-        title: "Organisation IT health",
-        description: "Assess the your organisations IT awareness and give recommendations for digital",
-        pages: [
-            {
-                pageId: "p1",
-                title: "2018 IT audit",
-                description: "This is the description",
-                questions: [
-                    {
-                        questionId: "p1q1",
-                        type: "text",
-                        question: "Test",
-                    },
-                    {
-                        questionId: "p1q2",
-                        type: "textarea",
-                        question: "Test area",
-                    },
-                ]
-            },
-            {
-                pageId: "p2",
-                title: "Information Governance",
-                description: "This is some help text",
-                questions: [
-                    {
-                        questionId: "p2q1",
-                        type: "radio",
-                        question: "Do you store your users' data securely either on your systems or in the cloud?",
-                        answers: ["yes", "partly", "slightly", "no"]
-                    },
-                    {
-                        questionId: "p2q2",
-                        type: "textarea",
-                        question: "Notes",
-                    },
-                ]
-            },
-            {
-                pageId: "p3",
-                title: "Page 3",
-                description: "This is page 3",
-                questions: [
-                    {
-                        questionId: "p3q1",
-                        type: "textarea",
-                        question: "Fill in some text",
-                    },
-                ]
-            },
-            {
-                pageId: "p4",
-                title: "Page 4",
-                description: "This is page 4",
-                questions: [
-                    {
-                        questionId: "p4q1",
-                        type: "textarea",
-                        question: "Final page, whats your thoughts?",
-                    },
-                ]
-            }
-        ]
-    },
-    {
-        auditId: "auditNumber2",
-        title: "Do I need a programmer",
-        description: "Do you need a programmer or can you buy off the shelf?",
-        pages: [
-            {
-                pageId: "p1",
-                title: "2018",
-                description: "This is the description",
-                questions: [
-                    {
-                        questionId: "p1q1",
-                        type: "text",
-                        question: "Test",
-                    },
-                    {
-                        questionId: "p1q2",
-                        type: "textarea",
-                        question: "Test area",
-                    },
-                ]
-            },
-            {
-                pageId: "p2",
-                title: "Information Governance",
-                description: "This is some help text",
-                questions: [
-                    {
-                        questionId: "p2q1",
-                        type: "radio",
-                        question: "This is question 1 on page 2",
-                        answers: ["yes", "partly", "slightly", "no"]
-                    },
-                    {
-                        questionId: "p2q2",
-                        type: "textarea",
-                        question: "This is question 2 on page 2",
-                    },
-                    {
-                        questionId: "p2q3",
-                        type: "radio",
-                        question: "This is question 3 on page 2",
-                        answers: ["yes", "partly", "slightly", "no"]
-                    },
-                ]
-            }
-        ]
-    }
-];

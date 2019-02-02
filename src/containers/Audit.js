@@ -4,7 +4,8 @@ import Advice from "../audit/containers/Advice";
 import {Container, Progress} from 'reactstrap';
 import update from "immutability-helper/index";
 
-import {lookupById, loadAuditById, saveAudit} from "../lib/AuditData";
+import {lookupById} from "../lib/AuditData";
+import {updateAudit, loadAuditById} from "../lib/StubDataLoader";
 
 /**
  * Handles loading audit data and displaying either the questions or the advice
@@ -25,10 +26,7 @@ export default class Audit extends Component {
     async componentDidMount() {
         try {
             const auditData = await loadAuditById(this.props.match.params.id);
-
-            //console.log("Loaded audit data", auditData);
             const {auditAnswers, currentPage, complete} = auditData;
-
             const audit = await lookupById(auditData.auditId);
 
             this.setState({
@@ -90,7 +88,7 @@ export default class Audit extends Component {
             complete: complete
         };
 
-        return await saveAudit(this.props.match.params.id, toSave);
+        return await updateAudit(this.props.match.params.id, toSave);
     };
 
 

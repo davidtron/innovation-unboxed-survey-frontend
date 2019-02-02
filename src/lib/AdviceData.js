@@ -1,22 +1,12 @@
 import * as math from 'mathjs';
-import { Storage, Cache } from "aws-amplify";
-import { utf8ArrayToStr } from "./JsonHelper";
-
-const useStub = false;
+import { Cache } from "aws-amplify";
+import {retrieveDataFile} from "./StubDataLoader";
 
 const loadAdviceData = async () => {
-
-    if(useStub) {
-        const stubbedAdviceData = await fakeLoadAdviceData();
-        Cache.setItem("adviceData", stubbedAdviceData, {expires: 3600000});
-        return stubbedAdviceData;
-    }
-
     Cache.setItem("adviceData", []);
-    const result = await Storage.get("advice.json", {download: true, expires: 3600000});
-    const cachedAdviceData = JSON.parse(utf8ArrayToStr(result.Body));
-    Cache.setItem("adviceData", cachedAdviceData, {expires: 3600000});
-    return cachedAdviceData;
+    const auditData = await retrieveDataFile("advice.json");
+    Cache.setItem("adviceData", auditData, {expires: 3600000});
+    return auditData;
 };
 
 const getCachedAdviceData = async () => {
@@ -25,8 +15,6 @@ const getCachedAdviceData = async () => {
 
 const getAdviceById = async (auditId) => {
     const cachedAdviceData = await getCachedAdviceData();
-    console.log("getAdviceById", cachedAdviceData);
-
 
     const matching = cachedAdviceData.filter(eachAudit => eachAudit.auditId === auditId);
     if (matching.length !== 1) {
@@ -47,7 +35,7 @@ const findScoresForAnswers = (pageAnswers, scores) => {
 
             const currentAnswer = pageAnswers[answerId];
             let scoreForAnswer = scoresForAnswerId[currentAnswer];
-            console.log(answerId + " is " + currentAnswer + " which is scored " + scoreForAnswer);
+            // console.log(answerId + " is " + currentAnswer + " which is scored " + scoreForAnswer);
             calculationContext[answerId] = scoreForAnswer;
         }
     });
@@ -81,7 +69,6 @@ export const generateAdvice = async (audit, auditAnswers) => {
             if(scores && formula) {
                 // The page advice should apply the scoring and formula
                 // Calc score for each question for given pageAnswers
-                //console.log("pageAnswers",pageAnswers);
 
                 // Store the score for a given answer on the calculation context
                 let calculationContext = findScoresForAnswers(pageAnswers, scores);
@@ -97,10 +84,15 @@ export const generateAdvice = async (audit, auditAnswers) => {
                     result: result
                 };
             } else {
-                // The page has generic advice (ie for text field only answers)
-                adviceForAuditAnswers[pageId] = {
-                    result: adviceForPage["default"]
-                };
+                // Does the page have default advice
+                if(adviceForPage["default"]) {
+                    // The page has generic advice (ie for text field only answers)
+                    adviceForAuditAnswers[pageId] = {
+                        result: adviceForPage["default"]
+                    };
+                } else {
+                    console.warn("There is no advice defined for page "+ pageId);
+                }
             }
         }
 
@@ -108,20 +100,29 @@ export const generateAdvice = async (audit, auditAnswers) => {
 
     // Now calculate the general advice
     if(adviceData.summary) {
-        const overallSummaryScore = math.eval(adviceData.summary.formula, overallCalculationContext);
-        const advice = convertScoreToAdviceFromResults(overallSummaryScore, adviceData.summary.results);
+        if(adviceData.summary["default"]) {
+            // The advice has just hard coded summary advice
+            adviceForAuditAnswers["summary"] = {
+                result: adviceData.summary["default"]
+            };
+        } else {
+            const overallSummaryScore = math.eval(adviceData.summary.formula, overallCalculationContext);
+            const advice = convertScoreToAdviceFromResults(overallSummaryScore, adviceData.summary.results);
 
-        // console.log(overallCalculationContext);
-        // console.log(adviceData.summary.formula);
-        // console.log(adviceData.summary.results);
-        // console.log(overallSummaryScore);
-        // console.log(advice);
-        // console.log("------------");
+            // console.log(overallCalculationContext);
+            // console.log(adviceData.summary.formula);
+            // console.log(adviceData.summary.results);
+            // console.log(overallSummaryScore);
+            // console.log(advice);
+            // console.log("------------");
 
-        adviceForAuditAnswers["summary"] = {
-            score: overallSummaryScore,
-            result: advice
-        };
+            adviceForAuditAnswers["summary"] = {
+                score: overallSummaryScore,
+                result: advice
+            };
+        }
+    } else {
+        throw new Error("Invalid advice data, no summary section " + JSON.stringify(adviceData));
     }
 
     return adviceForAuditAnswers;
@@ -137,54 +138,3 @@ export const findPageById = (dataWithPages, pageId) => {
 
     return null;
 };
-
-const fakeLoadAdviceData = async () => {
-    return new Promise(function(resolve, reject) {
-        setTimeout(() => resolve(hardCoded), 400);
-    });
-};
-
-
-const hardCoded = [
-    {
-        auditId: "auditNumber2",
-        pages: [
-            {
-                pageId: "p1",
-                "default": "hard coded advice from page 1"
-            },
-            {
-                pageId: "p2",
-                scores: { // we have scores, and formula
-                    p2q1: {
-                        "yes": 5,
-                        "partly": 4,
-                        "slightly": 3,
-                        "no": 0
-                    },
-                    p2q3: {
-                        "yes": 3,
-                        "partly": 2,
-                        "slightly": 1,
-                        "no": 0
-                    }
-                },
-                formula: "((p2q1 + p2q3) / 8)*100",
-                results: {
-                    "0 < x < 20" : "you're doing it all wrong",
-                    "20 < x < 50" : "you need to do blah",
-                    "50 < x <= 100" : "good job"
-                }
-            }
-        ],
-        summary: {
-            formula: "p2 + 3",
-            results: {
-                "0 < x < 20" : "overall summary is bad",
-                "20 < x < 50" : "overall summary is blah",
-                "50 < x <= 100" : "overall summary is good job"
-            }
-        }
-    }
-
-];
