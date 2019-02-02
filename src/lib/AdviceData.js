@@ -1,16 +1,36 @@
 import * as math from 'mathjs';
+import { Storage, Cache } from "aws-amplify";
+import { utf8ArrayToStr } from "./JsonHelper";
+
+const useStub = false;
+
+const loadAdviceData = async () => {
+
+    if(useStub) {
+        const stubbedAdviceData = await fakeLoadAdviceData();
+        Cache.setItem("adviceData", stubbedAdviceData, {expires: 3600000});
+        return stubbedAdviceData;
+    }
+
+    Cache.setItem("adviceData", []);
+    const result = await Storage.get("advice.json", {download: true, expires: 3600000});
+    const cachedAdviceData = JSON.parse(utf8ArrayToStr(result.Body));
+    Cache.setItem("adviceData", cachedAdviceData, {expires: 3600000});
+    return cachedAdviceData;
+};
+
+const getCachedAdviceData = async () => {
+    return Cache.getItem("adviceData", {callback: loadAdviceData});
+};
+
+const getAdviceById = async (auditId) => {
+    const cachedAdviceData = await getCachedAdviceData();
+    console.log("getAdviceById", cachedAdviceData);
 
 
-export const getAdviceById = auditId => {
-    // TODO: Find the correct audit data
-    // Where is this cached? for now look at the hardcoded
-
-    const matching = hardCoded.filter(eachAudit => eachAudit.auditId === auditId);
+    const matching = cachedAdviceData.filter(eachAudit => eachAudit.auditId === auditId);
     if (matching.length !== 1) {
-
-        // TODO boom - how to handle errors?
-        // Think this whole method should be async and return an error for front end to handle (same as if aws connectivity down)
-        throw new Error("Could not find " +auditId);
+        throw new Error("Could not find advice with auditId " +auditId);
     }
 
     // Found the audit data
@@ -27,7 +47,7 @@ const findScoresForAnswers = (pageAnswers, scores) => {
 
             const currentAnswer = pageAnswers[answerId];
             let scoreForAnswer = scoresForAnswerId[currentAnswer];
-            //console.log(answerId + " is " + currentAnswer + " which is scored " + scoreForAnswer);
+            console.log(answerId + " is " + currentAnswer + " which is scored " + scoreForAnswer);
             calculationContext[answerId] = scoreForAnswer;
         }
     });
@@ -41,14 +61,14 @@ const convertScoreToAdviceFromResults = (scoreForPage, results) => {
         return math.eval(formula, calcContext);
     });
 
-    if (!matchingResult) throw new Error("Expected to match "+scoreForPage+" result from " +JSON.stringify(results));
+    if (!matchingResult) throw new Error("Expected to match a score of "+scoreForPage+" result from results " +JSON.stringify(results));
 
     return results[matchingResult];
 };
 
-export const generateAdvice = (audit, auditAnswers) => {
+export const generateAdvice = async (audit, auditAnswers) => {
 
-    const adviceData = getAdviceById(audit.auditId);
+    const adviceData = await getAdviceById(audit.auditId);
     let adviceForAuditAnswers = {};
     let overallCalculationContext = {};
 
@@ -117,6 +137,13 @@ export const findPageById = (dataWithPages, pageId) => {
 
     return null;
 };
+
+const fakeLoadAdviceData = async () => {
+    return new Promise(function(resolve, reject) {
+        setTimeout(() => resolve(hardCoded), 400);
+    });
+};
+
 
 const hardCoded = [
     {

@@ -1,35 +1,41 @@
 import React, {Component} from 'react';
 
-import RadioAnswers from '../components/RadioAnswers'
-import TextAreaAnswer from '../components/TextAreaAnswer'
-import TextBoxAnswer from '../components/TextBoxAnswer'
-import {Button, Form, FormGroup, Container, ButtonGroup} from 'reactstrap';
-import update from 'immutability-helper';
-import {API} from "aws-amplify/lib/index";
-import {generateAdvice, findPageById} from '../../lib/AdviceOnAudits';
+import {Button, Container} from 'reactstrap';
+import {generateAdvice, findPageById} from '../../lib/AdviceData';
 import {Link} from "react-router-dom";
 
 
 export default class Advice extends Component {
-    constructor(allprops) {
-        super(allprops);
+    constructor(props) {
+        super(props);
 
-        const {audit, auditAnswers, edit, ...props} = allprops;
+        const {audit, auditAnswers, edit} = props;
         this.audit = audit;
-
         this.edit = edit;
-
-        let advice = generateAdvice(audit, auditAnswers);
 
         this.state = {
             auditAnswers: auditAnswers,
-            advice: advice,
-            page: 0
+            advice: null,
+            page: 0,
+            error: null
         };
     }
 
+    async componentDidMount() {
+
+        try {
+            const advice = await generateAdvice(this.audit, this.state.auditAnswers);
+            this.setState({
+                advice: advice
+            });
+        } catch (e) {
+            this.setState({error: e.message});
+            console.error("Could not mount audit Advice", e);
+        }
+    }
+
     next = () => {
-        this.setState({page: this.state.page +1});
+        this.setState({page: this.state.page + 1});
     };
 
     previous = () => {
@@ -37,13 +43,20 @@ export default class Advice extends Component {
     };
 
     render() {
-        // Go through each audit page and see if we have an advice for it and render
+        const advice = this.state.advice;
 
+        if (!advice) {
+            return <Container>
+                <div>{this.state.error}</div>
+                <div>Loading...</div>
+            </Container>
+
+        }
+
+        // Go through each audit page and see if we have an advice for it and render
         const advicePages = Object.keys(this.state.advice);
 
         // console.log("All advice is ", this.state.advice);
-
-
         const pageId = advicePages[this.state.page];
         const advicePageData = this.state.advice[pageId];
         // console.log("Rendering advice page "+ this.state.page + " which is " + pageId, advicePageData);
@@ -51,7 +64,7 @@ export default class Advice extends Component {
 
         let auditPage = findPageById(this.audit, pageId);
 
-        if(! auditPage) {
+        if (!auditPage) {
             // Last page (ie the summary)
             auditPage = {
                 title: this.audit.title,
@@ -59,12 +72,13 @@ export default class Advice extends Component {
             };
         }
 
-        const nextLink = this.state.page+1 < advicePages.length ? <Button onClick={this.next}>Next</Button>: <Button tag={Link} to={`/`}>Close Advice</Button>;;
-        const prevLink = this.state.page-1 >= 0 ? <Button onClick={this.previous}>Previous</Button> : null;
-
+        const nextLink = this.state.page + 1 < advicePages.length ? <Button onClick={this.next}>Next</Button> :
+            <Button tag={Link} to={`/`}>Close Advice</Button>;
+        ;
+        const prevLink = this.state.page - 1 >= 0 ? <Button onClick={this.previous}>Previous</Button> : null;
 
         return <Container>
-
+            <div>{this.state.error}</div>
             <h2>{auditPage.title}</h2>
             <h3>{auditPage.description}</h3>
             <p>{advicePageData.score}</p>
