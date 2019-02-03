@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 
-import {Button, Container} from 'reactstrap';
+import {Button, Container, FormGroup, ButtonGroup} from 'reactstrap';
 import {generateAdvice, findPageById} from '../../lib/AdviceData';
 import {Link} from "react-router-dom";
-
+import Paragraphs from '../../components/Paragraphs';
 
 export default class Advice extends Component {
     constructor(props) {
@@ -42,6 +42,7 @@ export default class Advice extends Component {
         this.setState({page: this.state.page - 1});
     };
 
+
     render() {
         const advice = this.state.advice;
 
@@ -72,22 +73,26 @@ export default class Advice extends Component {
             };
         }
 
-        const nextLink = this.state.page + 1 < advicePages.length ? <Button onClick={this.next}>Next</Button> :
-            <Button tag={Link} to={`/`}>Close Advice</Button>;
-        ;
-        const prevLink = this.state.page - 1 >= 0 ? <Button onClick={this.previous}>Previous</Button> : null;
-
         return <Container>
+
             <div>{this.state.error}</div>
+
             <h2>{auditPage.title}</h2>
-            <h3>{auditPage.description}</h3>
-            <p>{advicePageData.score}</p>
-            <p>{advicePageData.result}</p>
+            <p>{auditPage.description}</p>
+            <FormGroup inline row>
+                <ButtonGroup sm={{offset: 0}}>
+                    {this.state.page - 1 >= 0 ? <Button onClick={this.previous}>Previous</Button> : null}
 
-            {prevLink}
-            {nextLink}
+                    {this.state.page + 1 < advicePages.length ? <Button onClick={this.next}>Next</Button> :
+                        <Button color="warning" tag={Link} to={`/`}>Close Advice</Button>
+                    }
 
-            <Button onClick={this.edit}>Edit my answers</Button>
+                    <Button color="danger" onClick={this.edit}>Edit my answers</Button>
+                </ButtonGroup>
+            </FormGroup>
+            <h3>{advicePageData.score}</h3>
+            <Paragraphs input={advicePageData.result} />
+
         </Container>
     }
 }

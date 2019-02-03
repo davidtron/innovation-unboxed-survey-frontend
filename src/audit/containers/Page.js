@@ -4,6 +4,8 @@ import RadioAnswers from '../components/RadioAnswers'
 import TextAreaAnswer from '../components/TextAreaAnswer'
 import TextBoxAnswer from '../components/TextBoxAnswer'
 import {Button, Form, FormGroup, Container, ButtonGroup} from 'reactstrap';
+import Paragraphs from '../../components/Paragraphs';
+
 import update from 'immutability-helper';
 
 /**
@@ -81,7 +83,7 @@ export default class Page extends Component {
         return (
             <Container>
                 <h2>{this.pageData.title}</h2>
-                <p>{this.pageData.description}</p>
+                <Paragraphs input={this.pageData.description} />
                 <Form onSubmit={this.preventEnter} onChange={this.handleChange}>
 
                     {this.renderQuestions(this.pageData.questions)}
@@ -98,7 +100,7 @@ export default class Page extends Component {
                                 <Button disabled={this.unansweredQuestions()}
                                         onClick={() => this.handleSubmit(this.next)}>Next</Button>
                                 :
-                                <Button disabled={this.unansweredQuestions()}
+                                <Button color="warning" disabled={this.unansweredQuestions()}
                                         onClick={() => this.handleSubmit(this.quit)}>Complete</Button>
                             }
                         </ButtonGroup>

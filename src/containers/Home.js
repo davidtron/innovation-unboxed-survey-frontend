@@ -73,7 +73,7 @@ export default class Home extends Component {
                                                      onClick={() => this.createNewAudit(audit)}
                                                      key={i}>
                             <h4>
-                                <b>{"\uFF0B"}</b>Start: {audit.title}
+                                <span aria-hidden>{"\uFF0B"}</span>Start: {audit.title}
                             </h4>
                             {audit.description}
                         </ListGroupItem>

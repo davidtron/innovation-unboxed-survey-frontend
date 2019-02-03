@@ -75,7 +75,7 @@ const auditData = [
             {
                 pageId: "p1",
                 title: "2018 IT audit",
-                description: "This is the description",
+                description: "This is the description Lorem ipsum dolor sit amet, unum falli dissentiet sed ea, invidunt concludaturque an eos. Sea referrentur philosophia cu, mundi dicant viderer at vel, ne eam sanctus definiebas argumentum. Has te quas partem. Mea scaevola elaboraret eu, at vel suscipit dissentiet accommodare. Eu vel vide deterruisset, vitae altera perpetua ius te.\n Omnium accumsan imperdiet est ei, homero salutatus pro id, eu inermis reprimique has. Mea te reque animal, pri reque instructior an. Eu pri malis labore mediocritatem, dolorem accusam sed cu. Tale minimum in nam, cu integre phaedrum mel.\n Mea facete mediocritatem id, ad vero reque has, sea prompta veritus vituperata eu. Stet blandit consectetuer cum ei, id sea alienum principes torquatos. Nonumes appetere sit in, exerci convenire an sea, ut vix magna fabellas urbanitas. Soluta consectetuer te mea, viderer noluisse in duo. Et soluta fuisset ius, usu eros liber urbanitas ne, clita perfecto nam ei.\n Ea his eirmod accusamus, iuvaret commune sea no. Est omnis decore an, lucilius imperdiet at vim. Etiam neglegentur eam ex, alia nulla an vix, et minim facilis his. Has nulla simul accumsan ad, ea usu viris aliquip. Unum epicurei perpetua no cum, ei sed nibh mnesarchum. Omnis quidam ad ius, ea vide veri tation ius.\n Has postea option aliquando id, ne malorum accusam deserunt eum, inani oportere maiestatis ea eum. Nostrum assentior consequuntur id eos, possit melius gubergren at vix, scripta necessitatibus est ad. Ei graeci aliquam pri. Affert imperdiet cotidieque ea mel. Ea pro noster corrumpit.",
                 questions: [
                     {
                         questionId: "p1q1",
@@ -189,11 +189,11 @@ const adviceData = [
         pages: [
             {
                 pageId: "p1",
-                "default": "hard coded advice from page 1"
+                "default": "hard coded advice from page 1\nLorem ipsum dolor sit amet, unum falli dissentiet sed ea, invidunt concludaturque an eos. Sea referrentur philosophia r at vel, ne eam sanctus definiebas argumentum. Has te quas partem. Mea scaevola elaboraret eu, at vel suscipit dissentiet accommodare. Eu vel vide deterruisset, vitae altera perpetua ius te.\n Omnium accumsan imperdiet est ei, homero salutatus pro id, eu inermis reprimique has. Mea te reque animal, pri reque instructior an. Eu pri malis labore mediocritatem, dolorem accusam sed cu. Tale minimum in nam, cu integre phaedrum mel.\n Mea facete mediocritatem id, ad vero reque has, sea prompta veritus vituperata eu. Stet blandit consectetuer cum ei, id sea alienum principes torquatos. Nonumes appetere sit in, exerci convenire an sea, ut vix magna fabellas urbanitas. Soluta consectetuer te mea, viderer noluisse in duo. Et soluta fuisset ius, usu eros liber urbanitas ne, clita perfecto nam ei.\n Ea his eirmod accusamus, iuvaret commune sea no. Est omnis decore an, lucilius imperdiet at vim. Etiam neglegentur eam ex, alia nulla an vix, et minim facilis his. Has nulla simul accumsan ad, ea usu viris aliquip. Unum epicurei perpetua no cum, ei sed nibh mnesarchum. Omnis quidam ad ius, ea vide veri tation ius.\n Has postea option aliquando id, ne malorum accusam deserunt eum, inani oportere maiestatis ea eum. Nostrum assentior consequuntur id eos, possit melius gubergren at vix, scripta necessitatibus est ad. Ei graeci aliquam pri."
             }
         ],
         summary: {
-            "default": "hard coded advice for whole audit"
+            "default": "Lorem ipsum dolor sit amet, unum falli dissentiet sed ea, invidunt concludaturque an eos. Sea referrentur philosophia cu, mundi dicant viderer at vel, ne eam sanctus definiebas argumentum. Has te quas partem. Mea scaevola elaboraret eu, at vel suscipit dissentiet accommodare. Eu vel vide deterruisset, vitae altera perpetua ius te.\n Omnium accumsan imperdiet est ei, homero salutatus pro id, eu inermis reprimique has. Mea te reque animal, pri reque instructior an. Eu pri malis labore mediocritatem, dolorem accusam sed cu. Tale minimum in nam, cu integre phaedrum mel.\n Mea facete mediocritatem id, ad vero reque has, sea prompta veritus vituperata eu. Stet blandit consectetuer cum ei, id sea alienum principes torquatos. Nonumes appetere sit in, exerci convenire an sea, ut vix magna fabellas urbanitas. Soluta consectetuer te mea, viderer noluisse in duo. Et soluta fuisset ius, usu eros liber urbanitas ne, clita perfecto nam ei.\n Ea his eirmod accusamus, iuvaret commune sea no. Est omnis decore an, lucilius imperdiet at vim. Etiam neglegentur eam ex, alia nulla an vix, et minim facilis his. Has nulla simul accumsan ad, ea usu viris aliquip. Unum epicurei perpetua no cum, ei sed nibh mnesarchum. Omnis quidam ad ius, ea vide veri tation ius.\n Has postea option aliquando id, ne malorum accusam deserunt eum, inani oportere maiestatis ea eum. Nostrum assentior consequuntur id eos, possit melius gubergren at vix, scripta necessitatibus est ad. Ei graeci aliquam pri. Affert imperdiet cotidieque ea mel. Ea pro noster corrumpit."
         }
     },
     {
@@ -228,7 +228,7 @@ const adviceData = [
             }
         ],
         summary: {
-            formula: "p2 + 3",
+            formula: "p2",
             results: {
                 "0 < x < 20" : "overall summary is bad",
                 "20 < x < 50" : "overall summary is blah",
