@@ -7,6 +7,6 @@ import "./Paragraphs.css";
  */
 export default ({ input }) =>
     <div className="Paragraphs">
-        {input.split("\n").map(output => <p>{output}</p>)}
+        {input.split("\n").map((output, i) => <p key={i}>{output}</p>)}
     </div>
 

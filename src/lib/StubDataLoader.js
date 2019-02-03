@@ -80,7 +80,8 @@ const auditData = [
                     {
                         questionId: "p1q1",
                         type: "text",
-                        question: "Test",
+                        question: "What is your organisations name?",
+                        required: true
                     },
                     {
                         questionId: "p1q2",
@@ -98,7 +99,8 @@ const auditData = [
                         questionId: "p2q1",
                         type: "radio",
                         question: "Do you store your users' data securely either on your systems or in the cloud?",
-                        answers: ["yes", "partly", "slightly", "no"]
+                        answers: ["yes", "partly", "slightly", "no"],
+                        required: true
                     },
                     {
                         questionId: "p2q2",
@@ -128,6 +130,7 @@ const auditData = [
                         questionId: "p4q1",
                         type: "textarea",
                         question: "Final page, whats your thoughts?",
+                        required: true
                     },
                 ]
             }
@@ -164,18 +167,20 @@ const auditData = [
                         questionId: "p2q1",
                         type: "radio",
                         question: "This is question 1 on page 2",
-                        answers: ["yes", "partly", "slightly", "no"]
+                        answers: ["yes", "partly", "slightly", "no"],
+                        required: true
                     },
                     {
                         questionId: "p2q2",
                         type: "textarea",
-                        question: "This is question 2 on page 2",
+                        question: "Optional this is question 2 on page 2",
                     },
                     {
                         questionId: "p2q3",
                         type: "radio",
                         question: "This is question 3 on page 2",
-                        answers: ["yes", "partly", "slightly", "no"]
+                        answers: ["yes", "partly", "slightly", "no"],
+                        required: true
                     },
                 ]
             }

@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import {Button, Container, FormGroup, ButtonGroup} from 'reactstrap';
 import {generateAdvice, findPageById} from '../../lib/AdviceData';
 import {Link} from "react-router-dom";
-import Paragraphs from '../../components/Paragraphs';
+import Paragraphs from '../components/Paragraphs';
 
 export default class Advice extends Component {
     constructor(props) {
