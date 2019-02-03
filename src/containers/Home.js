@@ -69,7 +69,8 @@ export default class Home extends Component {
                 <h2>Start a new audit</h2>
                 <ListGroup>
                     {unstartedAudits.map(
-                        (audit, i) => <ListGroupItem tag="button" action
+                        (audit, i) =>
+                            <ListGroupItem tag="button" action
                                                      onClick={() => this.createNewAudit(audit)}
                                                      key={i}>
                             <h4>
@@ -95,7 +96,8 @@ export default class Home extends Component {
                 <h2>Your existing audits</h2>
                 <ListGroup>
                     {inProgressAudits.map(
-                        (audit, i) => <ListGroupItem tag={Link} to={`/audits/${audit.auditAnswersId}`} header="Foo" key={i}>
+                        (audit, i) =>
+                            <ListGroupItem tag={Link} action to={`/audits/${audit.auditAnswersId}`}  key={i}>
                                     <h4>
                                         {audit.title}
                                     </h4>
@@ -103,7 +105,7 @@ export default class Home extends Component {
                                     <p>
                                         {"Updated " + new Date(audit.lastEditTime).toLocaleDateString() + " - audit is " + audit.percentageComplete + "% complete"}
                                     </p>
-                                </ListGroupItem>
+                            </ListGroupItem>
                     )}
                 </ListGroup>
             </div>);
