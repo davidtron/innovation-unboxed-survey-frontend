@@ -177,7 +177,7 @@ const auditData = [
                     },
                     {
                         questionId: "p2q3",
-                        type: "radio",
+                        type: "select",
                         question: "This is question 3 on page 2",
                         answers: ["yes", "partly", "slightly", "no"],
                         required: true
