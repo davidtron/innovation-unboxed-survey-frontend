@@ -63,7 +63,7 @@ const auditListDataFor =  (cachedAuditData, usersAudit) => {
     const audit = lookupFromDataById(cachedAuditData, usersAudit.auditId);
 
     // Calc how much theyve done. If page 0, then 0%, if last page then 100%
-    let percentageComplete = (usersAudit.currentPage / audit.pages.length) * 100;
+    let percentageComplete = Math.round((usersAudit.currentPage / audit.pages.length) * 100);
     if (usersAudit.complete) {
         percentageComplete = 100;
     }
