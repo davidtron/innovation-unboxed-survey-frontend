@@ -73,7 +73,7 @@ export default class Home extends Component {
 
                     {unstartedAudits.map(
                         (audit, i) =>
-                            <Media className="mb-3 hoverable" onClick={() => this.createNewAudit(audit)} key={i}>
+                            <Media className="mb-3 hoverable" href="#" onClick={() => this.createNewAudit(audit)} key={i}>
                                 <Media className="align-self-center mr-sm-4 mr-1" >
                                     <PercentageCircle
                                         radius={40}
