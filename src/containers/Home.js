@@ -1,7 +1,9 @@
 import React, {Component} from "react";
-import {ListGroup, ListGroupItem} from "reactstrap";
+import {ListGroup, Media} from "reactstrap";
 import "./Home.css";
 import {Link} from "react-router-dom";
+import PercentageCircle from '../components/PercentageCircle';
+
 
 import {createAudit, getUnstartedAudits, getInProgressAudits} from "../lib/AuditData";
 
@@ -65,22 +67,28 @@ export default class Home extends Component {
         }
 
         return (
-            <div>
-                <h2>Start a new audit</h2>
-                <ListGroup>
+            <Media list className="audits pl-0">
+                <h3>Start a new audit</h3>
+                <div className="mb-2">These are new audits that you can choose to start.</div>
+
                     {unstartedAudits.map(
                         (audit, i) =>
-                            <ListGroupItem tag="button" action
-                                                     onClick={() => this.createNewAudit(audit)}
-                                                     key={i}>
-                            <h4>
-                                <span aria-hidden>{"\uFF0B"}</span>Start: {audit.title}
-                            </h4>
-                            {audit.description}
-                        </ListGroupItem>
+                            <Media className="mb-3 hoverable" onClick={() => this.createNewAudit(audit)} key={i}>
+                                <Media className="align-self-center mr-sm-4 mr-1" >
+                                    <PercentageCircle
+                                        radius={40}
+                                        borderWidth={8}
+                                        color="#2ecc71">
+                                        <span className="display-4 text" aria-hidden>{"\uFF0B"}</span>
+                                    </PercentageCircle>
+                                </Media>
+                                <Media body>
+                                    <Media heading>{audit.title}</Media>
+                                    <div>{audit.description}</div>
+                                </Media>
+                            </Media>
                     )}
-                </ListGroup>
-            </div>
+            </Media>
         );
     }
 
@@ -92,23 +100,29 @@ export default class Home extends Component {
         }
 
         return (
-            <div className="audits">
-                <h2>Your existing audits</h2>
-                <ListGroup>
+            <Media list className="audits pl-0">
+                <h3>Your existing audits</h3>
+                <div className="mb-2">These are audits that are in progress or ones you have completed with the advice we provide.</div>
                     {inProgressAudits.map(
                         (audit, i) =>
-                            <ListGroupItem tag={Link} action to={`/audits/${audit.auditAnswersId}`}  key={i}>
-                                    <h4>
-                                        {audit.title}
-                                    </h4>
-                                    {audit.description}
-                                    <p>
-                                        {"Updated " + new Date(audit.lastEditTime).toLocaleDateString() + " - audit is " + audit.percentageComplete + "% complete"}
-                                    </p>
-                            </ListGroupItem>
+                            <Media className="mb-3 hoverable" href={`/audits/${audit.auditAnswersId}`}  key={i}>
+                                <Media className="align-self-center mr-sm-4 mr-1" >
+                                    <PercentageCircle
+                                        radius={40}
+                                        borderWidth={8}
+                                        percent={audit.percentageComplete}
+                                        color="#ffc107">
+                                    </PercentageCircle>
+                                </Media>
+                                <Media body>
+                                    <Media heading>{audit.title}</Media>
+                                    <div>{audit.description}</div>
+                                    <small className="text-muted">{"Updated " + new Date(audit.lastEditTime).toLocaleDateString()}</small>
+                                </Media>
+                            </Media>
                     )}
-                </ListGroup>
-            </div>);
+
+            </Media>);
     }
 
     /**
@@ -126,7 +140,7 @@ export default class Home extends Component {
 
     renderAudits() {
         if (this.state.isLoading) {
-            return <div>Loading</div>
+            return <div>Loading...</div>
         }
 
         return (

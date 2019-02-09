@@ -1,5 +1,5 @@
 import { Cache } from "aws-amplify";
-import {getUsersAudits, saveNewAudit, retrieveDataFile} from "./StubDataLoader"
+import {getUsersAudits, saveNewAudit, retrieveDataFile} from "./DataLoader"
 
 export const loadAuditData = async () => {
     Cache.setItem("auditData", []);

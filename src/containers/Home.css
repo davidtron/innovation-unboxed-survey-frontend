@@ -11,3 +11,13 @@
 .Home .lander p {
   color: #999;
 }
+
+.Home .media-list a {
+  color: black;
+  text-decoration: none;
+}
+
+.Home .media-list .hoverable:hover {
+  background-color: #f8f9fa;
+}
+

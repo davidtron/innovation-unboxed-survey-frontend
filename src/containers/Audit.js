@@ -5,7 +5,7 @@ import {Container, Progress} from 'reactstrap';
 import update from "immutability-helper/index";
 
 import {lookupById} from "../lib/AuditData";
-import {updateAudit, loadAuditById} from "../lib/StubDataLoader";
+import {updateAudit, loadAuditById} from "../lib/DataLoader";
 
 /**
  * Handles loading audit data and displaying either the questions or the advice

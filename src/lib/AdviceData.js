@@ -1,6 +1,6 @@
 import * as math from 'mathjs';
 import { Cache } from "aws-amplify";
-import {retrieveDataFile} from "./StubDataLoader";
+import {retrieveDataFile} from "./DataLoader";
 
 const loadAdviceData = async () => {
     Cache.setItem("adviceData", []);

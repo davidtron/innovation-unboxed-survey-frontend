@@ -62,7 +62,7 @@ export class App extends Component {
             !this.state.isAuthenticating &&
             <Container className="App">
                 <Navbar color="light" light expand="md">
-                    <NavbarBrand tag={Link} to="/">Innovation Unboxed survey</NavbarBrand>
+                    <NavbarBrand tag={Link} to="/">Innovation Unboxed Audit</NavbarBrand>
                     <NavbarToggler onClick={this.toggle}/>
                     <Collapse isOpen={this.state.navIsOpen} navbar>
                         <Nav className="ml-auto" navbar>
