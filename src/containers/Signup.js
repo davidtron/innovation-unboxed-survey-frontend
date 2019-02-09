@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {Form, FormGroup, FormText, Input, Label} from "reactstrap";
 import LoaderButton from "../components/LoaderButton";
+import Error from "../components/Error";
 import "./Signup.css";
 import { Auth } from "aws-amplify";
 
@@ -14,7 +15,8 @@ export default class Signup extends Component {
             password: "",
             confirmPassword: "",
             confirmationCode: "",
-            newUser: null
+            newUser: null,
+            error: null
         };
     }
 
@@ -39,7 +41,7 @@ export default class Signup extends Component {
     handleSubmit = async event => {
         event.preventDefault();
 
-        this.setState({ isLoading: true });
+        this.setState({ isLoading: true, error: null });
 
         try {
             const newUser = await Auth.signUp({
@@ -52,8 +54,8 @@ export default class Signup extends Component {
         } catch (e) {
             // TODO - handle invalid username exception (UsernameExistsException)
             // TODO - handle password length, type violations
-
-            console.log(e.message);
+            console.error(e.message);
+            this.setState({ isLoading: false, error: e.message });
         }
 
         this.setState({ isLoading: false });
@@ -62,7 +64,7 @@ export default class Signup extends Component {
     handleConfirmationSubmit = async event => {
         event.preventDefault();
 
-        this.setState({ isLoading: true });
+        this.setState({ isLoading: true, error: null });
 
         try {
             await Auth.confirmSignUp(this.state.email, this.state.confirmationCode);
@@ -71,14 +73,14 @@ export default class Signup extends Component {
             this.props.userHasAuthenticated(true);
             this.props.history.push("/");
         } catch (e) {
-            console.log(e.message);
-            this.setState({ isLoading: false });
+            console.error("Could not signin to account", e.message);
+            this.setState({ isLoading: false, error: e.message });
         }
     };
 
     renderConfirmationForm() {
         return (
-            <Form onSubmit={this.handleConfirmationSubmit}>
+            <Form className="mt-5" onSubmit={this.handleConfirmationSubmit}>
                 <FormGroup>
                     <Label for="confirmationCode">Confirmation Code</Label>
                     <Input
@@ -107,7 +109,7 @@ export default class Signup extends Component {
 
     renderForm() {
         return (
-            <Form onSubmit={this.handleSubmit}>
+            <Form className="mt-5" onSubmit={this.handleSubmit}>
                 <FormGroup>
                     <Label for="email">Email</Label>
                     <Input
@@ -155,6 +157,7 @@ export default class Signup extends Component {
     render() {
         return (
             <div className="Signup">
+                <Error error={this.state.error}/>
                 {this.state.newUser === null
                     ? this.renderForm()
                     : this.renderConfirmationForm()}

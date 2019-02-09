@@ -1,10 +1,10 @@
 import React, {Component} from "react";
-import {Form, FormGroup, Label, Input} from "reactstrap";
+import {Form, FormGroup, Input, Label} from "reactstrap";
 import "./Login.css";
-import { Auth } from "aws-amplify";
+import {Auth} from "aws-amplify";
 import LoaderButton from "../components/LoaderButton";
-import { Link } from "react-router-dom";
-
+import {Link} from "react-router-dom";
+import Error from "../components/Error"
 
 
 export default class Login extends Component {
@@ -14,7 +14,8 @@ export default class Login extends Component {
         this.state = {
             isLoading: false,
             email: "",
-            password: ""
+            password: "",
+            error: null
         };
     }
 
@@ -31,21 +32,22 @@ export default class Login extends Component {
     handleSubmit = async event => {
         event.preventDefault();
 
-        this.setState({ isLoading: true });
+        this.setState({isLoading: true, error: null});
 
         try {
             await Auth.signIn(this.state.email, this.state.password);
             this.props.userHasAuthenticated(true);
         } catch (e) {
-            console.log(e.message);
-            this.setState({ isLoading: false });
+            console.error(e.message);
+            this.setState({isLoading: false, error: e.message});
         }
     };
 
     render() {
         return (
             <div className="Login">
-                <Form onSubmit={this.handleSubmit}>
+                <Error error={this.state.error}/>
+                <Form className="mt-5" onSubmit={this.handleSubmit}>
                     <FormGroup>
                         <Label for="email">Email</Label>
                         <Input

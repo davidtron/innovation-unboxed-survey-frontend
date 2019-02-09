@@ -2,9 +2,10 @@ import React, {Component} from "react";
 import {Media} from "reactstrap";
 import "./Home.css";
 import PercentageCircle from '../components/PercentageCircle';
+import Error from "../components/Error";
 
 
-import {createAudit, getUnstartedAudits, getInProgressAudits} from "../lib/AuditData";
+import {createAudit, getInProgressAudits, getUnstartedAudits} from "../lib/AuditData";
 
 export default class Home extends Component {
     constructor(props) {
@@ -44,7 +45,7 @@ export default class Home extends Component {
 
 
     async createNewAudit(audit) {
-        this.setState({isLoading: true});
+        this.setState({isLoading: true, error: null});
 
         try {
             const newAudit = await createAudit(audit.auditId);
@@ -153,7 +154,7 @@ export default class Home extends Component {
     render() {
         return (
             <div className="Home">
-                <div>{this.state.error}</div>
+                <Error error={this.state.error} />
                 {this.props.isAuthenticated ? this.renderAudits() : this.renderLander()}
             </div>
         );

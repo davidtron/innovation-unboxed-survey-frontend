@@ -6,6 +6,8 @@ import update from "immutability-helper/index";
 
 import {lookupById} from "../lib/AuditData";
 import {updateAudit, loadAuditById} from "../lib/DataLoader";
+import Error from "../components/Error";
+
 
 /**
  * Handles loading audit data and displaying either the questions or the advice
@@ -80,7 +82,7 @@ export default class Audit extends Component {
         // console.log("current page is ", page);
 
         const updatedAnswers = update(this.state.auditAnswers, {[answersSubmitted.pageId]: {$set: answersSubmitted.answers}});
-        this.setState({auditAnswers: updatedAnswers});
+        this.setState({auditAnswers: updatedAnswers, error: null });
 
         let toSave = {
             currentPage: page,
@@ -113,7 +115,7 @@ export default class Audit extends Component {
 
         return (
             <Container>
-                <div>{this.state.error}</div>
+                <Error error={this.state.error}/>
                 <Page key={pageData.pageId} answers={answers} pageData={pageData}
                       previous={prevPageFunction}
                       next={nextPageFunction}

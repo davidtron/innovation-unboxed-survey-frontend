@@ -3,6 +3,7 @@ import {Auth} from "aws-amplify";
 import {Link} from "react-router-dom";
 import {Form, FormGroup, FormText, Input, Label} from "reactstrap";
 import LoaderButton from "../components/LoaderButton";
+import Error from "../components/Error";
 import "./ResetPassword.css";
 import { TiTick } from 'react-icons/ti';
 
@@ -19,7 +20,8 @@ export default class ResetPassword extends Component {
             confirmed: false,
             confirmPassword: "",
             isConfirming: false,
-            isSendingCode: false
+            isSendingCode: false,
+            error: null
         };
     }
 
@@ -44,21 +46,21 @@ export default class ResetPassword extends Component {
     handleSendCodeClick = async event => {
         event.preventDefault();
 
-        this.setState({isSendingCode: true});
+        this.setState({isSendingCode: true, error: null});
 
         try {
             await Auth.forgotPassword(this.state.email);
             this.setState({codeSent: true});
         } catch (e) {
-            console.log(e.message);
-            this.setState({isSendingCode: false});
+            console.error("Could not send forgotten password code",e.message);
+            this.setState({isSendingCode: false, error: e.message});
         }
     };
 
     handleConfirmClick = async event => {
         event.preventDefault();
 
-        this.setState({isConfirming: true});
+        this.setState({isConfirming: true, error: null});
 
         try {
             await Auth.forgotPasswordSubmit(
@@ -68,14 +70,14 @@ export default class ResetPassword extends Component {
             );
             this.setState({confirmed: true});
         } catch (e) {
-            console.log(e.message);
-            this.setState({isConfirming: false});
+            console.error("Could not submit forgotten password",e.message);
+            this.setState({isConfirming: false, error: e.message});
         }
     };
 
     renderRequestCodeForm() {
         return (
-            <Form onSubmit={this.handleSendCodeClick}>
+            <Form className="mt-5" onSubmit={this.handleSendCodeClick}>
                 <FormGroup>
                     <Label for="email">Email</Label>
                     <Input
@@ -101,7 +103,7 @@ export default class ResetPassword extends Component {
 
     renderConfirmationForm() {
         return (
-            <Form onSubmit={this.handleConfirmClick}>
+            <Form className="mt-5" onSubmit={this.handleConfirmClick}>
                 <FormGroup>
                     <Label for="code">Confirmation Code</Label>
                     <Input
@@ -152,7 +154,7 @@ export default class ResetPassword extends Component {
 
     renderSuccessMessage() {
         return (
-            <div className="success">
+            <div className="success mt-5">
                 <TiTick size="1.8em"/>
                 <p>Your password has been reset.</p>
                 <p>
@@ -167,6 +169,7 @@ export default class ResetPassword extends Component {
     render() {
         return (
             <div className="ResetPassword">
+                <Error error={this.state.error} />
                 {!this.state.codeSent
                     ? this.renderRequestCodeForm()
                     : !this.state.confirmed

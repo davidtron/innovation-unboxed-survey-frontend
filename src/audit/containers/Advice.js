@@ -4,6 +4,7 @@ import {Button, Container, FormGroup, ButtonGroup} from 'reactstrap';
 import {generateAdvice, findPageById} from '../../lib/AdviceData';
 import {Link} from "react-router-dom";
 import Paragraphs from '../components/Paragraphs';
+import Error from '../../components/Error';
 
 export default class Advice extends Component {
     constructor(props) {
@@ -48,7 +49,7 @@ export default class Advice extends Component {
 
         if (!advice) {
             return <Container>
-                <div>{this.state.error}</div>
+                <Error error={this.state.error} />
                 <div>Loading...</div>
             </Container>
 
@@ -74,9 +75,7 @@ export default class Advice extends Component {
         }
 
         return <Container>
-
-            <div>{this.state.error}</div>
-
+            <Error error={this.state.error} />
             <h2>{auditPage.title}</h2>
             <p>{auditPage.description}</p>
             <FormGroup inline row>
@@ -92,7 +91,6 @@ export default class Advice extends Component {
             </FormGroup>
             <h3>{advicePageData.score}</h3>
             <Paragraphs input={advicePageData.result} />
-
         </Container>
     }
 }
