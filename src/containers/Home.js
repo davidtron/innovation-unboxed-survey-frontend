@@ -1,7 +1,6 @@
 import React, {Component} from "react";
-import {ListGroup, Media} from "reactstrap";
+import {Media} from "reactstrap";
 import "./Home.css";
-import {Link} from "react-router-dom";
 import PercentageCircle from '../components/PercentageCircle';
 
 
@@ -67,7 +66,7 @@ export default class Home extends Component {
         }
 
         return (
-            <Media list className="audits pl-0">
+            <Media list className="audits pl-0 pb-sm-3">
                 <h3>Start a new audit</h3>
                 <div className="mb-2">These are new audits that you can choose to start.</div>
 
@@ -78,7 +77,7 @@ export default class Home extends Component {
                                     <PercentageCircle
                                         radius={40}
                                         borderWidth={8}
-                                        color="#2ecc71">
+                                        bgcolor="#ffc107">
                                         <span className="display-4 text" aria-hidden>{"\uFF0B"}</span>
                                     </PercentageCircle>
                                 </Media>
@@ -111,7 +110,7 @@ export default class Home extends Component {
                                         radius={40}
                                         borderWidth={8}
                                         percent={audit.percentageComplete}
-                                        color="#ffc107">
+                                        color="#007bff">
                                     </PercentageCircle>
                                 </Media>
                                 <Media body>
