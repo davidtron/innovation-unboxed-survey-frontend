@@ -49,7 +49,7 @@ const convertScoreToAdviceFromResults = (scoreForPage, results) => {
         return math.eval(formula, calcContext);
     });
 
-    if (!matchingResult) throw new Error("Expected to match a score of "+scoreForPage+" result from results " +JSON.stringify(results));
+    if (!matchingResult) throw new Error("Expected to match a score of "+scoreForPage+" from results " +JSON.stringify(results));
 
     return results[matchingResult];
 };

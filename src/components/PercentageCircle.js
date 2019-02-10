@@ -1,10 +1,28 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import "./PercentageCircle.css";
-
 
 class PercentageCircle extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            percent: 0,
+            borderWidth: 8,
+            leftTransformerDegree: '0deg',
+            rightTransformerDegree: '0deg',
+        };
+    }
+
+    componentDidMount() {
+        this.convertPropsToState(this.props);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.props.percent !== nextProps.percent) {
+            this.convertPropsToState(nextProps);
+        }
+    }
+
+    convertPropsToState = (props) => {
         const percent = props.percent;
         let leftTransformerDegree = '0deg';
         let rightTransformerDegree = '0deg';
@@ -15,13 +33,15 @@ class PercentageCircle extends Component {
             rightTransformerDegree = percent * 3.6 + 'deg';
             leftTransformerDegree = '0deg';
         }
-        this.state = {
-            percent: this.props.percent,
-            borderWidth: this.props.borderWidth < 2 || !this.props.borderWidth ? 2 : this.props.borderWidth,
+
+        this.setState({
+            percent: props.percent,
+            borderWidth: props.borderWidth < 2 || !props.borderWidth ? 2 : props.borderWidth,
             leftTransformerDegree: leftTransformerDegree,
             rightTransformerDegree: rightTransformerDegree,
-        };
-    }
+        });
+    };
+
     render() {
         return (
             <div
@@ -88,7 +108,8 @@ class PercentageCircle extends Component {
                         backgroundColor: this.props.innerColor,
                     }}
                 >
-                    {this.props.children ? this.props.children : <span className={'text ' + this.props.textStyle}>{this.props.percent}%</span>}
+                    {this.props.children ? this.props.children :
+                        <span className={'text ' + this.props.textStyle}>{this.props.percent}%</span>}
                 </div>
             </div>
         );
