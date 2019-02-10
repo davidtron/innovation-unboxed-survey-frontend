@@ -60,8 +60,8 @@ export class App extends Component {
 
         return (
             !this.state.isAuthenticating &&
-            <Container className="App">
-                <Navbar color="light" light expand="md">
+            <div >
+                <Navbar color="dark" dark expand="md">
                     <NavbarBrand tag={Link} to="/">Innovation Unboxed Audit</NavbarBrand>
                     <NavbarToggler onClick={this.toggle}/>
                     <Collapse isOpen={this.state.navIsOpen} navbar>
@@ -80,9 +80,11 @@ export class App extends Component {
                         </Nav>
                     </Collapse>
                 </Navbar>
-                <div>{this.state.error}</div>
-                <Routes childProps={childProps} />
-            </Container>
+                <Container className="App">
+                    <div>{this.state.error}</div>
+                    <Routes childProps={childProps} />
+                </Container>
+            </div>
         );
     }
 }
