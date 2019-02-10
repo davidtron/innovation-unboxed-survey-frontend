@@ -44,7 +44,8 @@ export default class Advice extends Component {
     };
 
     renderScore = (score) => {
-        if(! score) return;
+        console.log("Score is ", score);
+        if(typeof score === 'undefined' || score === null || score < 0) return;
 
         return <PercentageCircle
             radius={40}
