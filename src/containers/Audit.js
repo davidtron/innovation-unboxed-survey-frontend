@@ -39,6 +39,7 @@ export default class Audit extends Component {
                 error: null
             });
         } catch (e) {
+            e.message = "Could not load audit with id " + this.props.match.params.id;
             this.handleError(e);
         }
     }
@@ -95,7 +96,7 @@ export default class Audit extends Component {
 
 
     render() {
-        if (!this.state.auditAnswers) return <div>Loading...</div>;
+        if (!this.state.auditAnswers) return  <Container><Error error={this.state.error}/><div>Loading...</div></Container>;
 
         const totalPages = this.state.audit.pages.length;
         const currentPage = this.state.currentPage;
