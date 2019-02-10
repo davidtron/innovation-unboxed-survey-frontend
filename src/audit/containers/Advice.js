@@ -58,8 +58,6 @@ export default class Advice extends Component {
     render() {
         const advice = this.state.advice;
 
-        console.log("Render it");
-
         if (!advice) {
             return <Container>
                 <Error error={this.state.error} />
@@ -101,7 +99,7 @@ export default class Advice extends Component {
                 </Media>
             </Media>
 
-            <Paragraphs input={advicePageData.result} />
+            <Paragraphs className="mt-4" input={advicePageData.result} />
             <FormGroup inline row>
                 <ButtonGroup sm={{offset: 0}}>
                     {this.state.page - 1 >= 0 ? <Button onClick={this.previous}>Previous</Button> : null}
