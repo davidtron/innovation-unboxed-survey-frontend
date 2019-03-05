@@ -50,7 +50,7 @@ export default class Home extends Component {
         try {
             const newAudit = await createAudit(audit.auditId);
             // Now route to audit
-            this.props.history.push(`/audits/${newAudit.auditAnswersId}`);
+            this.props.history.push(`${process.env.PUBLIC_URL}/#/id/${newAudit.auditAnswersId}`);
 
         } catch (e) {
             this.setState({error: e.message});
@@ -105,7 +105,7 @@ export default class Home extends Component {
                 <div className="mb-2">These are audits that are in progress or ones you have completed with the advice we provide.</div>
                     {inProgressAudits.map(
                         (audit, i) =>
-                            <Media className="mb-3 hoverable" href={`/audits/${audit.auditAnswersId}`}  key={i}>
+                            <Media className="mb-3 hoverable" href={`${process.env.PUBLIC_URL}/#/id/${audit.auditAnswersId}`}  key={i}>
                                 <Media className="align-self-center mr-sm-4 mr-1" >
                                     <PercentageCircle
                                         radius={40}

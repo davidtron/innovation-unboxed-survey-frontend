@@ -2,6 +2,7 @@
   "name": "innovation-unboxed-survey-frontend",
   "version": "0.1.0",
   "private": true,
+  "homepage" : "/audits/",
   "dependencies": {
     "aws-amplify": "^1.1.10",
     "bootstrap": "^4.1.3",
